@@ -1,0 +1,1334 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>[Product] — On-screen takeoff for Quantity Surveyors</title>
+<meta name="description" content="On-screen takeoff for Quantity Surveyors. Built around SLS 573 and CIDA SBD contracts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(0.985 0.005 85);
+    --paper-2: oklch(0.965 0.006 85);
+    --ink: oklch(0.20 0.012 80);
+    --ink-2: oklch(0.36 0.012 80);
+    --ink-3: oklch(0.55 0.010 80);
+    --rule: oklch(0.86 0.008 80);
+    --rule-2: oklch(0.92 0.006 80);
+    --teal: oklch(0.60 0.095 195);
+    --teal-deep: oklch(0.42 0.080 200);
+    --teal-tint: oklch(0.94 0.030 195);
+    --warn: oklch(0.62 0.13 60);
+    --sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --serif: "Instrument Serif", "Times New Roman", serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  .mono { font-family: var(--mono); font-feature-settings: "ss01","cv11","tnum"; }
+  .serif-it { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: 0; }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
+
+  /* ─── Top nav ──────────────────────────────────────────── */
+  .nav {
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; }
+  .brand-mark {
+    width: 22px; height: 22px; position: relative;
+    border: 1.25px solid var(--ink); border-radius: 2px;
+  }
+  .brand-mark::before, .brand-mark::after {
+    content: ""; position: absolute; background: var(--ink);
+  }
+  .brand-mark::before { left: 4px; top: 4px; width: 13px; height: 1.25px; }
+  .brand-mark::after  { left: 4px; top: 9px; width: 8px;  height: 1.25px; }
+  .brand-mark span {
+    position: absolute; left: 4px; top: 14px; width: 10px; height: 1.25px;
+    background: var(--teal);
+  }
+  .brand-name { font-size: 17px; }
+  .nav-right { display: flex; align-items: center; gap: 28px; font-size: 14px; color: var(--ink-2); }
+  .nav-right a { color: inherit; text-decoration: none; }
+  .nav-right a:hover { color: var(--ink); }
+  .nav-pill {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--teal-deep);
+    background: var(--teal-tint);
+    padding: 4px 9px; border-radius: 2px;
+  }
+
+  /* ─── Hero ─────────────────────────────────────────────── */
+  .hero {
+    padding: 88px 0 96px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1.35fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11.5px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-3);
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 28px;
+  }
+  .eyebrow::after {
+    content: ""; flex: 1; height: 1px; background: var(--rule);
+  }
+  h1.hero-h {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 64px;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin: 0 0 28px;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  h1.hero-h em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; color: var(--teal-deep); }
+  .hero-sub {
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 480px;
+    margin: 0 0 36px;
+    text-wrap: pretty;
+  }
+  .cta-row { display: flex; gap: 14px; align-items: center; }
+  .btn {
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    padding: 13px 22px;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: transform .08s ease, background .15s ease;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:hover { background: oklch(0.10 0.01 80); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+  .btn-ghost:hover { border-color: var(--ink); }
+  .btn-ghost .play {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1px solid currentColor;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 8px;
+  }
+  .hero-meta {
+    margin-top: 40px;
+    display: flex; gap: 36px;
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .hero-meta b { color: var(--ink); font-weight: 500; }
+
+  /* ─── Hero canvas (takeoff drawing) ─────────────────────── */
+  .canvas-frame {
+    position: relative;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 14px;
+    aspect-ratio: 4 / 3.05;
+  }
+  .canvas-titlebar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 30px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; padding: 0 12px;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    gap: 12px;
+    background: var(--paper);
+    border-radius: 3px 3px 0 0;
+  }
+  .canvas-titlebar .dots { display: flex; gap: 5px; }
+  .canvas-titlebar .dots span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--rule);
+  }
+  .canvas-titlebar .tab {
+    color: var(--ink); font-weight: 500;
+  }
+  .canvas-titlebar .crumb { color: var(--ink-3); }
+  .canvas-titlebar .right { margin-left: auto; display:flex; gap:14px; }
+  .canvas-stage {
+    position: absolute; inset: 30px 0 0 0;
+    overflow: hidden;
+    border-radius: 0 0 3px 3px;
+  }
+  .canvas-stage svg { width: 100%; height: 100%; display: block; }
+
+  /* floating callout labels over canvas */
+  .callout {
+    position: absolute;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 4px 8px;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 rgba(0,0,0,.02);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .callout.teal { color: var(--teal-deep); border-color: var(--teal); background: oklch(0.97 0.025 195); }
+  .canvas-sidebar {
+    position: absolute; top: 44px; right: 24px;
+    width: 178px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .canvas-sidebar h5 {
+    margin: 0; padding: 9px 11px;
+    font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .grp-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 11px;
+    border-bottom: 1px solid var(--rule-2);
+    font-size: 11.5px;
+    color: var(--ink-2);
+  }
+  .grp-row:last-child { border-bottom: 0; }
+  .grp-row.active { background: var(--teal-tint); color: var(--teal-deep); font-weight: 500; }
+  .grp-swatch { width: 9px; height: 9px; border-radius: 1px; flex-shrink: 0; }
+  .grp-row .qty { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); }
+  .grp-row.active .qty { color: var(--teal-deep); }
+
+  .canvas-toolbar {
+    position: absolute; bottom: 18px; left: 24px;
+    display: flex; align-items: center;
+    background: var(--paper);
+    border: 1px solid var(--rule); border-radius: 2px;
+    overflow: hidden;
+  }
+  .canvas-toolbar button {
+    width: 30px; height: 30px;
+    background: transparent; border: none; border-right: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink-2);
+    padding: 0;
+  }
+  .canvas-toolbar button:last-child { border-right: 0; }
+  .canvas-toolbar button.on { background: var(--ink); color: var(--paper); }
+  .canvas-toolbar svg { width: 14px; height: 14px; }
+
+  .canvas-scale {
+    position: absolute; bottom: 18px; right: 24px;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-3);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .scale-bar {
+    width: 60px; height: 6px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 10px, var(--paper) 10px 20px);
+    border: 1px solid var(--ink);
+  }
+
+  /* ─── Section scaffolding ──────────────────────────────── */
+  section.block { padding: 96px 0; border-bottom: 1px solid var(--rule); }
+  .section-head {
+    display: grid; grid-template-columns: 1fr 2.2fr;
+    gap: 64px;
+    margin-bottom: 56px;
+    align-items: end;
+  }
+  .section-tag {
+    font-family: var(--mono); font-size: 11.5px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .section-tag::before {
+    content: ""; display: inline-block;
+    width: 24px; height: 1px; background: var(--ink-3);
+    vertical-align: middle; margin-right: 10px;
+  }
+  h2.section-h {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 46px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  h2.section-h em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--teal-deep); }
+  .section-body { font-size: 17.5px; line-height: 1.55; color: var(--ink-2); max-width: 600px; text-wrap: pretty; }
+  .section-body p { margin: 0 0 16px; }
+  .section-body p:last-child { margin: 0; }
+
+  /* ─── What it solves: two-column with comparison ──────── */
+  .solves-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .solves-col { padding: 36px 36px 40px; }
+  .solves-col + .solves-col { border-left: 1px solid var(--rule); }
+  .solves-col h4 {
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 500;
+    margin: 0 0 18px;
+    color: var(--ink-3);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .solves-col.right h4 { color: var(--teal-deep); }
+  .solves-col h4 .badge {
+    background: var(--paper-2); border: 1px solid var(--rule); padding: 2px 7px; border-radius: 2px;
+    color: var(--ink-3);
+  }
+  .solves-col.right h4 .badge { background: var(--teal-tint); border-color: var(--teal); color: var(--teal-deep); }
+  .solves-list { list-style: none; padding: 0; margin: 0; }
+  .solves-list li {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 14px 0; border-top: 1px dashed var(--rule);
+    font-size: 15.5px; color: var(--ink);
+  }
+  .solves-list li:first-child { border-top: 0; padding-top: 4px; }
+  .solves-list .num {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    width: 22px; flex-shrink: 0; padding-top: 2px;
+  }
+  .solves-col.right .solves-list .num { color: var(--teal-deep); }
+
+  /* ─── Feature cards (4) ────────────────────────────────── */
+  .features {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  .feature {
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 36px 36px 40px;
+    background: var(--paper);
+    display: grid; grid-template-rows: 1fr auto auto auto;
+    min-height: 380px;
+    gap: 18px;
+  }
+  .feature .fdiag {
+    align-self: stretch;
+    background: var(--paper-2);
+    border: 1px solid var(--rule-2);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+  }
+  .feature .fdiag svg { width: 100%; height: 100%; display: block; }
+  .feature .findex {
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-3);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .feature .findex .dot {
+    display:inline-block; width: 6px; height: 6px; border-radius:50%;
+    background: var(--teal); margin-right: 8px; vertical-align: middle;
+  }
+  .feature h3 {
+    margin: 0;
+    font-size: 22px; font-weight: 500; letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .feature p {
+    margin: 0;
+    font-size: 14.5px; line-height: 1.55; color: var(--ink-2);
+    text-wrap: pretty;
+  }
+
+  /* ─── How it works (3 steps) ───────────────────────────── */
+  .steps {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .step {
+    padding: 36px 36px 40px;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+  .step:last-child { border-right: 0; }
+  .step-n {
+    font-family: var(--serif); font-style: italic;
+    font-size: 56px; line-height: 1;
+    color: var(--teal-deep);
+    margin-bottom: 24px;
+  }
+  .step-n sup { font-family: var(--mono); font-style: normal; font-size: 11px; vertical-align: top; color: var(--ink-3); margin-left: 6px; letter-spacing: 0.06em; }
+  .step h3 {
+    margin: 0 0 12px;
+    font-size: 24px; font-weight: 500; letter-spacing: -0.015em;
+  }
+  .step p {
+    margin: 0;
+    font-size: 15px; line-height: 1.55; color: var(--ink-2);
+    max-width: 320px;
+    text-wrap: pretty;
+  }
+  .step-anim {
+    margin-top: 28px;
+    height: 100px;
+    border: 1px solid var(--rule-2);
+    border-radius: 2px;
+    background:
+      linear-gradient(var(--paper-2), var(--paper-2)),
+      repeating-linear-gradient(90deg, var(--rule-2) 0 1px, transparent 1px 24px);
+    position: relative;
+    overflow: hidden;
+  }
+  .step-anim svg { width: 100%; height: 100%; position: absolute; inset: 0; }
+
+  /* ─── Built by a QS ────────────────────────────────────── */
+  .author {
+    display: grid;
+    grid-template-columns: 0.85fr 1.25fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .author-card {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 28px;
+  }
+  .author-portrait {
+    aspect-ratio: 4 / 5;
+    background:
+      repeating-linear-gradient(135deg, oklch(0.92 0.005 80) 0 8px, oklch(0.95 0.005 80) 8px 16px);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .author-meta {
+    margin-top: 18px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--ink-2);
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 14px;
+  }
+  .author-meta dt { color: var(--ink-3); }
+  .author-text h2 em { color: var(--teal-deep); }
+  .credentials {
+    display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap;
+  }
+  .credentials span {
+    font-family: var(--mono); font-size: 11.5px;
+    letter-spacing: 0.04em;
+    padding: 6px 10px;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    color: var(--ink-2);
+  }
+  .credentials span b { color: var(--ink); font-weight: 500; }
+  .projects-strip {
+    margin-top: 28px;
+    display: flex; gap: 12px;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .projects-strip div {
+    flex: 1;
+    border: 1px solid var(--rule);
+    padding: 12px 14px;
+    border-radius: 2px;
+    background: var(--paper);
+  }
+  .projects-strip div b { display: block; font-family: var(--sans); font-size: 13px; color: var(--ink); margin-top: 2px; text-transform: none; letter-spacing: -0.01em; font-weight: 500;}
+
+  /* ─── Beta form ────────────────────────────────────────── */
+  .beta {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 96px 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .beta .section-tag { color: oklch(0.65 0.01 80); }
+  .beta .section-tag::before { background: oklch(0.65 0.01 80); }
+  .beta h2.section-h { color: var(--paper); }
+  .beta h2.section-h em { color: var(--teal); }
+  .beta .section-body { color: oklch(0.75 0.01 80); }
+  .form-grid {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 28px;
+    max-width: 880px;
+  }
+  .form-row { display: flex; flex-direction: column; gap: 8px; }
+  .form-row.full { grid-column: 1 / -1; }
+  .form-row label {
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: oklch(0.65 0.01 80);
+    display: flex; gap: 8px; align-items: center;
+  }
+  .form-row label .req { color: var(--teal); }
+  .form-row input,
+  .form-row select,
+  .form-row textarea {
+    font-family: var(--sans);
+    font-size: 16px;
+    background: transparent;
+    border: 0; border-bottom: 1px solid oklch(0.30 0.01 80);
+    padding: 8px 0 10px;
+    color: var(--paper);
+    outline: none;
+    border-radius: 0;
+  }
+  .form-row textarea { resize: vertical; min-height: 70px; }
+  .form-row input:focus,
+  .form-row select:focus,
+  .form-row textarea:focus {
+    border-bottom-color: var(--teal);
+  }
+  .form-row select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--paper) 50%),
+                      linear-gradient(135deg, var(--paper) 50%, transparent 50%);
+    background-position: calc(100% - 14px) 16px, calc(100% - 10px) 16px;
+    background-size: 4px 4px, 4px 4px;
+    background-repeat: no-repeat;
+  }
+  .form-row select option { background: var(--ink); color: var(--paper); }
+  .form-submit-row {
+    margin-top: 32px;
+    display: flex; align-items: center; gap: 24px;
+    grid-column: 1 / -1;
+  }
+  .btn-submit {
+    background: var(--teal);
+    color: oklch(0.15 0.01 80);
+    border: 0;
+    font-family: var(--sans); font-weight: 600;
+    font-size: 14.5px; letter-spacing: -0.005em;
+    padding: 14px 26px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 12px;
+  }
+  .btn-submit:hover { background: oklch(0.65 0.10 195); }
+  .form-note {
+    font-family: var(--mono); font-size: 11px;
+    color: oklch(0.65 0.01 80);
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── Footer ───────────────────────────────────────────── */
+  footer {
+    padding: 56px 0 48px;
+    background: var(--paper);
+  }
+  .foot {
+    display: grid; grid-template-columns: 1.8fr 1fr 1fr;
+    gap: 40px;
+    border-top: 1px solid var(--rule);
+    padding-top: 48px;
+  }
+  .foot h6 {
+    margin: 0 0 14px;
+    font-family: var(--mono); font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .foot a { color: var(--ink-2); text-decoration: none; font-size: 14px; display: block; padding: 4px 0; }
+  .foot a:hover { color: var(--ink); }
+  .foot-bottom {
+    display: flex; justify-content: space-between;
+    margin-top: 56px;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+  .foot p { margin: 0 0 14px; font-size: 14.5px; color: var(--ink-2); max-width: 320px; line-height: 1.5; }
+  .foot .copilot {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: var(--mono); font-size: 11px;
+    background: var(--paper-2); border: 1px solid var(--rule);
+    padding: 8px 12px; border-radius: 2px;
+    color: var(--ink-2); text-decoration: none;
+    letter-spacing: 0.04em;
+  }
+  .foot .copilot:hover { border-color: var(--ink); color: var(--ink); }
+  .foot .copilot b { color: var(--ink); font-weight: 500; }
+
+  /* corner ticks decoration */
+  .ticks { position: absolute; pointer-events: none; }
+  .ticks::before, .ticks::after {
+    content: ""; position: absolute; background: var(--ink);
+  }
+
+  /* ─── Side rail w/ register marks ───────────────────────── */
+  .rail-l, .rail-r {
+    position: fixed; top: 0; bottom: 0; width: 40px;
+    pointer-events: none; z-index: 1;
+  }
+  .rail-l { left: 0; }
+  .rail-r { right: 0; }
+  .rail-l::before, .rail-r::before {
+    content: ""; position: absolute; top: 0; bottom: 0;
+    width: 1px; background: var(--rule);
+  }
+  .rail-l::before { right: 0; }
+  .rail-r::before { left: 0; }
+
+  /* ═══ Density · forensic (baked) ════════════════════════ */
+  body[data-density="forensic"] section.block { padding: 56px 0; }
+  body[data-density="forensic"] .hero { padding: 56px 0 64px; }
+  body[data-density="forensic"] .beta { padding: 56px 0; }
+  body[data-density="forensic"] .section-head { margin-bottom: 32px; gap: 40px; }
+  body[data-density="forensic"] h1.hero-h { font-size: 50px; }
+  body[data-density="forensic"] h2.section-h { font-size: 34px; }
+  body[data-density="forensic"] .hero-sub { font-size: 16px; }
+  body[data-density="forensic"] .section-body { font-size: 15px; }
+  body[data-density="forensic"] .feature { padding: 22px 22px 24px; min-height: 280px; gap: 12px; }
+  body[data-density="forensic"] .feature .fdiag { min-height: 96px; }
+  body[data-density="forensic"] .feature h3 { font-size: 18px; }
+  body[data-density="forensic"] .feature p { font-size: 13px; }
+  body[data-density="forensic"] .step { padding: 22px 22px 24px; }
+  body[data-density="forensic"] .step-n { font-size: 40px; margin-bottom: 14px; }
+  body[data-density="forensic"] .solves-col { padding: 22px 24px 26px; }
+  body[data-density="forensic"] .solves-list li { padding: 9px 0; font-size: 13.5px; }
+  body[data-density="forensic"] .hero-meta { margin-top: 24px; gap: 24px; }
+  body[data-density="forensic"] footer { padding: 28px 0 24px; }
+</style>
+</head>
+<body data-voice="sharp" data-density="forensic" data-grain="hairlines">
+
+<!-- ─── Nav ──────────────────────────────────────────────── -->
+<nav class="nav" data-screen-label="01 Nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <div class="brand-mark"><span></span></div>
+      <div class="brand-name" style="">[Product]</div>
+      <div class="nav-pill mono">Private Beta</div>
+    </div>
+    <div class="nav-right">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#author">About</a>
+      <a class="btn btn-primary" href="#beta" style="padding: 9px 16px;">Request access</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── Hero ─────────────────────────────────────────────── -->
+<header class="hero" data-screen-label="02 Hero">
+  <div class="wrap">
+    <div class="hero-grid">
+
+      <div>
+        <div class="eyebrow">
+          <span>QS Toolkit · v0.4 Beta</span>
+        </div>
+        <h1 class="hero-h" style="">
+          On-screen takeoff, built <em>for</em> Quantity Surveyors.
+        </h1>
+        <p class="hero-sub">
+          Measure drawings, manage cutouts, and export BOQ-ready quantities — designed around <span class="mono" style="font-size:14.5px;">SLS&nbsp;573</span> and CIDA <span class="mono" style="font-size:14.5px;">SBD</span> contracts.
+        </p>
+        <div class="cta-row">
+          <a href="#beta" class="btn btn-primary">Request beta access
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"></path></svg>
+          </a>
+          <a href="#" class="btn btn-ghost" aria-disabled="true" tabindex="-1" style="pointer-events:none; opacity:.45;"><span class="play">▶</span> Watch demo · 60s</a>
+        </div>
+
+        <div class="hero-meta">
+          <div><b>SLS 573</b><br>Method of Measurement</div>
+          <div><b>CIDA SBD</b><br>Standard Bidding Doc</div>
+          <div><b>BOQ-ready</b><br>XLSX · CSV · PDF</div>
+        </div>
+      </div>
+
+      <!-- Hero canvas: takeoff drawing fragment -->
+      <div class="canvas-frame" aria-label="On-screen takeoff canvas with wall thickness rendered to scale">
+        <div class="canvas-titlebar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="crumb">Project</div>
+          <div>·</div>
+          <div class="crumb">HSP-Block-B</div>
+          <div>·</div>
+          <div class="tab">Sheet&nbsp;A-201&nbsp;·&nbsp;Ground&nbsp;Floor</div>
+          <div class="right">
+            <span>1 : 100</span>
+            <span>mm</span>
+          </div>
+        </div>
+
+        <div class="canvas-stage">
+          <!-- Architectural plan SVG -->
+          <svg viewBox="0 0 800 540" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <pattern id="grid-fine" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M20 0H0V20" fill="none" stroke="oklch(0.90 0.006 80)" stroke-width="0.5"></path>
+              </pattern>
+              <pattern id="grid-bold" width="100" height="100" patternUnits="userSpaceOnUse">
+                <path d="M100 0H0V100" fill="none" stroke="oklch(0.83 0.008 80)" stroke-width="0.6"></path>
+              </pattern>
+              <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="oklch(0.55 0.01 80)" stroke-width="0.6"></line>
+              </pattern>
+            </defs>
+
+            <!-- background grid -->
+            <rect width="800" height="540" fill="url(#grid-fine)"></rect>
+            <rect width="800" height="540" fill="url(#grid-bold)"></rect>
+
+            <!-- ─── walls (drawn to scale, double-line) ─── -->
+            <!-- outer envelope -->
+            <g stroke="oklch(0.20 0.012 80)" fill="oklch(0.20 0.012 80)">
+              <!-- top wall outer -->
+              <rect x="80" y="80" width="640" height="9"></rect>
+              <rect x="80" y="80" width="9" height="380"></rect>
+              <rect x="711" y="80" width="9" height="380"></rect>
+              <rect x="80" y="451" width="640" height="9"></rect>
+            </g>
+            <!-- outer wall inner lines (cavity) -->
+            <g stroke="oklch(0.20 0.012 80)" stroke-width="0.8" fill="none">
+              <line x1="80" y1="98" x2="720" y2="98"></line>
+              <line x1="98" y1="80" x2="98" y2="460"></line>
+              <line x1="702" y1="80" x2="702" y2="460"></line>
+              <line x1="80" y1="442" x2="720" y2="442"></line>
+            </g>
+
+            <!-- internal walls -->
+            <g fill="oklch(0.20 0.012 80)">
+              <!-- vertical partition (selected, teal) -->
+              <rect x="298" y="98" width="6" height="180" fill="oklch(0.60 0.095 195)"></rect>
+              <!-- horizontal partition -->
+              <rect x="98" y="280" width="430" height="6"></rect>
+              <!-- another vertical -->
+              <rect x="528" y="98" width="6" height="180"></rect>
+              <!-- short partition  -->
+              <rect x="298" y="280" width="240" height="6"></rect>
+              <!-- right block -->
+              <rect x="528" y="280" width="6" height="162"></rect>
+            </g>
+
+            <!-- door openings (cut into walls) -->
+            <!-- door 1: in selected wall -->
+            <g>
+              <rect x="298" y="178" width="6" height="36" fill="oklch(0.965 0.006 85)"></rect>
+              <path d="M304 214 A36 36 0 0 1 340 178" fill="none" stroke="oklch(0.55 0.01 80)" stroke-width="0.8"></path>
+              <line x1="304" y1="214" x2="340" y2="214" stroke="oklch(0.55 0.01 80)" stroke-width="0.8"></line>
+            </g>
+            <!-- door 2: in top horizontal partition -->
+            <g>
+              <rect x="380" y="280" width="40" height="6" fill="oklch(0.965 0.006 85)"></rect>
+              <path d="M380 286 A40 40 0 0 1 420 326" fill="none" stroke="oklch(0.55 0.01 80)" stroke-width="0.8"></path>
+              <line x1="380" y1="286" x2="380" y2="326" stroke="oklch(0.55 0.01 80)" stroke-width="0.8"></line>
+            </g>
+
+            <!-- window openings (in outer wall, double line w/ glass) -->
+            <g stroke="oklch(0.20 0.012 80)" stroke-width="0.7">
+              <!-- top wall window 1 -->
+              <rect x="150" y="80" width="80" height="9" fill="oklch(0.965 0.006 85)"></rect>
+              <line x1="150" y1="84.5" x2="230" y2="84.5"></line>
+              <!-- top wall window 2 -->
+              <rect x="380" y="80" width="80" height="9" fill="oklch(0.965 0.006 85)"></rect>
+              <line x1="380" y1="84.5" x2="460" y2="84.5"></line>
+              <!-- top wall window 3 -->
+              <rect x="580" y="80" width="80" height="9" fill="oklch(0.965 0.006 85)"></rect>
+              <line x1="580" y1="84.5" x2="660" y2="84.5"></line>
+              <!-- bottom wall window -->
+              <rect x="200" y="451" width="100" height="9" fill="oklch(0.965 0.006 85)"></rect>
+              <line x1="200" y1="455.5" x2="300" y2="455.5"></line>
+              <!-- right wall window -->
+              <rect x="711" y="160" width="9" height="80" fill="oklch(0.965 0.006 85)"></rect>
+              <line x1="715.5" y1="160" x2="715.5" y2="240"></line>
+            </g>
+
+            <!-- ─── Room labels ─── -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="oklch(0.55 0.01 80)" text-anchor="middle">
+              <text x="195" y="190">WARD A · 24.6 m²</text>
+              <text x="415" y="190">WARD B · 28.1 m²</text>
+              <text x="617" y="190">CORRIDOR</text>
+              <text x="195" y="370">NURSE STN</text>
+              <text x="415" y="370">STORE</text>
+              <text x="617" y="370">WC</text>
+            </g>
+
+            <!-- ─── Dimension chain (top) ─── -->
+            <g stroke="oklch(0.55 0.01 80)" stroke-width="0.6" fill="none">
+              <line x1="80" y1="56" x2="720" y2="56"></line>
+              <line x1="80" y1="50" x2="80" y2="62"></line>
+              <line x1="301" y1="50" x2="301" y2="62"></line>
+              <line x1="531" y1="50" x2="531" y2="62"></line>
+              <line x1="720" y1="50" x2="720" y2="62"></line>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="oklch(0.36 0.012 80)" text-anchor="middle">
+              <text x="190" y="48">4 420</text>
+              <text x="416" y="48">4 600</text>
+              <text x="625" y="48">3 780</text>
+            </g>
+
+            <!-- left dim chain -->
+            <g stroke="oklch(0.55 0.01 80)" stroke-width="0.6" fill="none">
+              <line x1="56" y1="80" x2="56" y2="460"></line>
+              <line x1="50" y1="80" x2="62" y2="80"></line>
+              <line x1="50" y1="283" x2="62" y2="283"></line>
+              <line x1="50" y1="460" x2="62" y2="460"></line>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="oklch(0.36 0.012 80)" text-anchor="end" transform="rotate(-90 44 270)">
+              <text x="44" y="180" text-anchor="middle">4 060</text>
+              <text x="44" y="370" text-anchor="middle">3 540</text>
+            </g>
+
+            <!-- ─── Selected wall hatching (the t=0.23 wall) ─── -->
+            <rect x="298" y="98" width="6" height="180" fill="oklch(0.60 0.095 195)" opacity="0.18"></rect>
+            <!-- dotted bbox -->
+            <rect x="293" y="93" width="16" height="190" fill="none" stroke="oklch(0.60 0.095 195)" stroke-width="0.8" stroke-dasharray="3 3"></rect>
+
+            <!-- ─── leader line to wall thickness label ─── -->
+            <g stroke="oklch(0.42 0.080 200)" stroke-width="0.8" fill="none">
+              <line x1="301" y1="120" x2="380" y2="120"></line>
+              <circle cx="301" cy="120" r="1.5" fill="oklch(0.42 0.080 200)" stroke="none"></circle>
+            </g>
+
+            <!-- crosshair / cursor -->
+            <g stroke="oklch(0.42 0.080 200)" stroke-width="0.7">
+              <line x1="301" y1="250" x2="301" y2="262"></line>
+              <line x1="295" y1="256" x2="307" y2="256"></line>
+              <circle cx="301" cy="256" r="3" fill="none"></circle>
+            </g>
+
+          </svg>
+        </div>
+
+        <!-- floating callouts -->
+        <div class="callout teal" style="top: 92px; left: 49%;">
+          <span style="font-weight:600;">W-04 · Brickwork 230mm</span> · <span style="color:var(--ink-3);">t&nbsp;=&nbsp;0.23 m</span>
+        </div>
+        <div class="callout" style="bottom: 124px; left: 60px;">
+          A&nbsp;=&nbsp;28.1 m²  ·  P&nbsp;=&nbsp;21.4 m
+        </div>
+        <div class="callout" style="top: 248px; left: 24%;">
+          Door D1 — 900 × 2100 · auto-deducted
+        </div>
+
+        <!-- side panel with groups -->
+        <div class="canvas-sidebar">
+          <h5>Measurement Groups</h5>
+          <div class="grp-row"><span class="grp-swatch" style="background:#7a6d5e"></span>Excavation<span class="qty">12 it.</span></div>
+          <div class="grp-row"><span class="grp-swatch" style="background:#3b5a76"></span>Concrete<span class="qty">8 it.</span></div>
+          <div class="grp-row active"><span class="grp-swatch" style="background:oklch(0.60 0.095 195)"></span>Brickwork<span class="qty">24 it.</span></div>
+          <div class="grp-row"><span class="grp-swatch" style="background:#a06544"></span>Plastering<span class="qty">18 it.</span></div>
+          <div class="grp-row"><span class="grp-swatch" style="background:#6f7d5c"></span>Doors &amp; Wdws<span class="qty">11 it.</span></div>
+          <div class="grp-row"><span class="grp-swatch" style="background:#8b6f8e"></span>Finishes<span class="qty">— </span></div>
+        </div>
+
+        <!-- toolbar -->
+        <div class="canvas-toolbar">
+          <button title="Select"><svg viewBox="0 0 14 14"><path d="M3 2v10l3-3 2 4 1.5-.6L7.5 9H11L3 2z" fill="currentColor"></path></svg></button>
+          <button class="on" title="Wall"><svg viewBox="0 0 14 14"><rect x="2" y="4" width="10" height="6" fill="currentColor"></rect></svg></button>
+          <button title="Door"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 12V2h8M2 12h8a4 4 0 0 0-4-4"></path></svg></button>
+          <button title="Window"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="2" width="10" height="10"></rect><line x1="7" y1="2" x2="7" y2="12"></line><line x1="2" y1="7" x2="12" y2="7"></line></svg></button>
+          <button title="Area"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><polygon points="2,3 11,2 12,11 3,12"></polygon></svg></button>
+          <button title="Calibrate"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><line x1="2" y1="7" x2="12" y2="7"></line><line x1="3" y1="5" x2="3" y2="9"></line><line x1="7" y1="5" x2="7" y2="9"></line><line x1="11" y1="5" x2="11" y2="9"></line></svg></button>
+        </div>
+
+        <div class="canvas-scale">
+          <span class="scale-bar"></span>
+          <span>0&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;3 m</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ─── What it solves ───────────────────────────────────── -->
+<section class="block" data-screen-label="03 What it solves">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">§ 01 · The Problem</div>
+      <h2 class="section-h">QS work <em>isn't</em> generic measurement.</h2>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1.4fr; gap: 80px; align-items: start; margin-bottom: 48px;">
+      <div class="section-body" style="max-width: 380px;">
+        <p>Generic takeoff tools were built for general drafting and markup. They don't understand BOQ structure, schedule-driven openings, or the way QSs actually price work.</p>
+        <p>[Product] is built around how Quantity Surveyors think.</p>
+      </div>
+      <div class="section-body" style="max-width: 540px;">
+        <p>Groups follow <span class="mono" style="font-size:15.5px;">SLS&nbsp;573</span> trades. Openings deduct automatically from their host walls. Exports come BOQ-ready with sections, sub-types, and totals already laid out.</p>
+      </div>
+    </div>
+
+    <div class="solves-grid">
+      <div class="solves-col left">
+        <h4>Generic markup tools <span class="badge">Status quo</span></h4>
+        <ul class="solves-list">
+          <li><span class="num">01</span><span>Flat groups. You sort trades manually in Excel afterwards.</span></li>
+          <li><span class="num">02</span><span>Openings are measured separately and forgotten at deduction time.</span></li>
+          <li><span class="num">03</span><span>Exports are CSV dumps — no sections, no sub-totals.</span></li>
+          <li><span class="num">04</span><span>Built for site engineers and designers, not for pricing work.</span></li>
+        </ul>
+      </div>
+      <div class="solves-col right">
+        <h4>[Product] <span class="badge">QS-native</span></h4>
+        <ul class="solves-list">
+          <li><span class="num">01</span><span>Groups map to <b>SLS 573 trades</b> from the moment you create them.</span></li>
+          <li><span class="num">02</span><span>Schedule-driven cutouts auto-deduct from their <b>host walls</b>.</span></li>
+          <li><span class="num">03</span><span>BOQ-ready outputs with summary + detail sheets, ready for <b>CIDA SBD</b>.</span></li>
+          <li><span class="num">04</span><span>Built by a chartered QS doing real takeoff work, every day.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Feature highlights ──────────────────────────────── -->
+<section class="block" id="features" data-screen-label="04 Features">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">§ 02 · Capabilities</div>
+      <h2 class="section-h">Four things <em>only</em> a QS tool does right.</h2>
+    </div>
+
+    <div class="features">
+      <!-- Card 1 -->
+      <article class="feature">
+        <div class="fdiag">
+          <svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <pattern id="fp1-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+                <path d="M16 0H0V16" stroke="oklch(0.88 0.008 80)" stroke-width="0.5" fill="none"></path>
+              </pattern>
+            </defs>
+            <rect width="320" height="140" fill="url(#fp1-grid)"></rect>
+            <!-- detected groups overlay -->
+            <g opacity="0.85">
+              <rect x="30" y="22" width="80" height="38" fill="oklch(0.60 0.095 195)" opacity="0.18" stroke="oklch(0.60 0.095 195)" stroke-width="0.8"></rect>
+              <rect x="120" y="22" width="60" height="38" fill="oklch(0.62 0.13 60)" opacity="0.16" stroke="oklch(0.62 0.13 60)" stroke-width="0.8"></rect>
+              <rect x="190" y="22" width="100" height="38" fill="oklch(0.55 0.10 145)" opacity="0.16" stroke="oklch(0.55 0.10 145)" stroke-width="0.8"></rect>
+              <rect x="30" y="72" width="120" height="46" fill="oklch(0.62 0.10 30)" opacity="0.14" stroke="oklch(0.62 0.10 30)" stroke-width="0.8"></rect>
+              <rect x="160" y="72" width="130" height="46" fill="oklch(0.60 0.095 195)" opacity="0.18" stroke="oklch(0.60 0.095 195)" stroke-width="0.8"></rect>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="8" fill="oklch(0.42 0.080 200)">
+              <text x="34" y="36">brickwork</text>
+              <text x="124" y="36">conc.</text>
+              <text x="194" y="36">plaster</text>
+              <text x="34" y="88">excavation</text>
+              <text x="164" y="88">brickwork</text>
+            </g>
+            <!-- scan line -->
+            <line x1="0" y1="68" x2="320" y2="68" stroke="oklch(0.42 0.080 200)" stroke-width="0.8" stroke-dasharray="4 4"></line>
+            <circle cx="310" cy="68" r="3" fill="oklch(0.42 0.080 200)"></circle>
+          </svg>
+        </div>
+        <div class="findex"><span><span class="dot"></span>F · 01</span><span>AI-assisted</span></div>
+        <h3>AI Group Detection</h3>
+        <p>Identify measurement groups across an entire drawing set in seconds. Cross-check against your manual takeoff to catch missed items before they become RFIs.</p>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="feature">
+        <div class="fdiag">
+          <svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet">
+            <!-- schedule table on left -->
+            <g font-family="JetBrains Mono, monospace" font-size="8" fill="oklch(0.36 0.012 80)">
+              <rect x="14" y="18" width="130" height="104" fill="oklch(0.985 0.005 85)" stroke="oklch(0.86 0.008 80)"></rect>
+              <text x="20" y="30" fill="oklch(0.55 0.01 80)">DOOR SCHEDULE</text>
+              <line x1="14" y1="36" x2="144" y2="36" stroke="oklch(0.86 0.008 80)"></line>
+              <text x="20" y="50">D1  900×2100</text>
+              <text x="20" y="64">D2  800×2100</text>
+              <text x="20" y="78">W1  1200×1200</text>
+              <text x="20" y="92">W2  1500×1500</text>
+              <text x="20" y="106">W3  600×600</text>
+            </g>
+            <!-- arrow -->
+            <g stroke="oklch(0.42 0.080 200)" stroke-width="1" fill="none">
+              <path d="M150 70 H 178 L 174 66 M178 70 L 174 74"></path>
+            </g>
+            <!-- wall fragment on right -->
+            <g>
+              <rect x="190" y="38" width="115" height="14" fill="oklch(0.20 0.012 80)"></rect>
+              <rect x="200" y="38" width="20" height="14" fill="oklch(0.985 0.005 85)"></rect>
+              <rect x="245" y="38" width="14" height="14" fill="oklch(0.985 0.005 85)"></rect>
+              <rect x="280" y="38" width="20" height="14" fill="oklch(0.985 0.005 85)"></rect>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="7" fill="oklch(0.42 0.080 200)">
+              <text x="200" y="66">−D1</text>
+              <text x="245" y="66">−W3</text>
+              <text x="280" y="66">−D2</text>
+              <text x="190" y="92" fill="oklch(0.36 0.012 80)">Net wall = L × H − Σ openings</text>
+              <text x="190" y="106" fill="oklch(0.20 0.012 80)">= 12.4 m² (auto)</text>
+            </g>
+          </svg>
+        </div>
+        <div class="findex"><span><span class="dot"></span>F · 02</span><span>Deductions</span></div>
+        <h3>Schedule-driven cutouts</h3>
+        <p>Define door and window schedules once. Auto-deduct openings from wall measurements with width, height, and sill data flowing through to the BOQ.</p>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="feature">
+        <div class="fdiag">
+          <svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet">
+            <g font-family="JetBrains Mono, monospace" font-size="8" fill="oklch(0.36 0.012 80)">
+              <text x="14" y="22" fill="oklch(0.55 0.01 80)">SLS 573 · METHOD OF MEASUREMENT</text>
+              <line x1="14" y1="28" x2="306" y2="28" stroke="oklch(0.86 0.008 80)"></line>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="oklch(0.20 0.012 80)">
+              <text x="14" y="46">A · Preliminaries</text>
+              <text x="14" y="62">B · Excavation &amp; Earthworks</text>
+              <text x="14" y="78" fill="oklch(0.42 0.080 200)" font-weight="600">C · Concrete Work</text>
+              <text x="14" y="94" fill="oklch(0.42 0.080 200)" font-weight="600">D · Masonry &amp; Brickwork</text>
+              <text x="14" y="110">E · Roof &amp; Coverings</text>
+              <text x="14" y="126">F · Finishings</text>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="oklch(0.55 0.01 80)" text-anchor="end">
+              <text x="306" y="46">—</text>
+              <text x="306" y="62">12 items</text>
+              <text x="306" y="78" fill="oklch(0.42 0.080 200)" font-weight="600">8 items</text>
+              <text x="306" y="94" fill="oklch(0.42 0.080 200)" font-weight="600">24 items</text>
+              <text x="306" y="110">—</text>
+              <text x="306" y="126">18 items</text>
+            </g>
+            <!-- highlight band -->
+            <rect x="10" y="68" width="300" height="32" fill="oklch(0.60 0.095 195)" opacity="0.08"></rect>
+          </svg>
+        </div>
+        <div class="findex"><span><span class="dot"></span>F · 03</span><span>Standards</span></div>
+        <h3>SLS 573-aware grouping</h3>
+        <p>Groups map to standard method of measurement trades from the start. No re-sorting at export time, no copy-paste into Excel.</p>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="feature">
+        <div class="fdiag">
+          <svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet">
+            <!-- BOQ sheet stack -->
+            <g>
+              <rect x="32" y="18" width="220" height="110" fill="oklch(0.985 0.005 85)" stroke="oklch(0.86 0.008 80)"></rect>
+              <rect x="28" y="14" width="220" height="110" fill="oklch(0.985 0.005 85)" stroke="oklch(0.86 0.008 80)"></rect>
+              <rect x="24" y="10" width="220" height="110" fill="oklch(0.985 0.005 85)" stroke="oklch(0.20 0.012 80)"></rect>
+              <text x="36" y="26" font-family="JetBrains Mono, monospace" font-size="8" fill="oklch(0.55 0.01 80)">BILL OF QUANTITIES · BLOCK B · v1</text>
+              <line x1="32" y1="32" x2="240" y2="32" stroke="oklch(0.86 0.008 80)"></line>
+              <g font-family="JetBrains Mono, monospace" font-size="8" fill="oklch(0.36 0.012 80)">
+                <text x="32" y="46">Item   Description           Qty   Unit</text>
+                <line x1="32" y1="50" x2="240" y2="50" stroke="oklch(0.92 0.006 80)"></line>
+                <text x="32" y="62" fill="oklch(0.20 0.012 80)">D.1   Brickwork 230mm     124.6  m²</text>
+                <text x="32" y="74" fill="oklch(0.20 0.012 80)">D.2   Brickwork 115mm      48.2  m²</text>
+                <text x="32" y="86" fill="oklch(0.20 0.012 80)">C.1   PCC 1:3:6 found.     18.9  m³</text>
+                <text x="32" y="98" fill="oklch(0.20 0.012 80)">F.1   Plaster cement       284.0 m²</text>
+                <line x1="32" y1="104" x2="240" y2="104" stroke="oklch(0.92 0.006 80)"></line>
+                <text x="32" y="116" fill="oklch(0.42 0.080 200)" font-weight="600">Sub-total carried fwd</text>
+              </g>
+            </g>
+            <!-- format chips -->
+            <g font-family="JetBrains Mono, monospace" font-size="8">
+              <rect x="266" y="22" width="42" height="18" fill="oklch(0.94 0.030 195)" stroke="oklch(0.60 0.095 195)"></rect>
+              <text x="287" y="34" text-anchor="middle" fill="oklch(0.42 0.080 200)">XLSX</text>
+              <rect x="266" y="46" width="42" height="18" fill="oklch(0.985 0.005 85)" stroke="oklch(0.86 0.008 80)"></rect>
+              <text x="287" y="58" text-anchor="middle" fill="oklch(0.36 0.012 80)">CSV</text>
+              <rect x="266" y="70" width="42" height="18" fill="oklch(0.985 0.005 85)" stroke="oklch(0.86 0.008 80)"></rect>
+              <text x="287" y="82" text-anchor="middle" fill="oklch(0.36 0.012 80)">PDF</text>
+            </g>
+          </svg>
+        </div>
+        <div class="findex"><span><span class="dot"></span>F · 04</span><span>Export</span></div>
+        <h3>BOQ-ready export</h3>
+        <p>Excel, CSV, and PDF outputs structured for direct use in CIDA SBD contract documents. Summary and detail sheets included.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ─── How it works ─────────────────────────────────────── -->
+<section class="block" id="how" data-screen-label="05 How it works">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">§ 03 · The Workflow</div>
+      <h2 class="section-h">Three steps from <em>drawing</em> to BOQ.</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">01<sup>·import</sup></div>
+        <h3>Import.</h3>
+        <p>Drop in your PDF drawing set. Calibrate scale once per page. Multi-page support for full project sets.</p>
+        <div class="step-anim">
+          <svg viewBox="0 0 280 100" preserveAspectRatio="xMidYMid meet">
+            <!-- drop zone -->
+            <rect x="60" y="14" width="60" height="72" fill="oklch(0.985 0.005 85)" stroke="oklch(0.86 0.008 80)" stroke-dasharray="3 3"></rect>
+            <g font-family="JetBrains Mono, monospace" font-size="7" fill="oklch(0.55 0.01 80)">
+              <text x="90" y="58" text-anchor="middle">A-201.pdf</text>
+              <text x="90" y="70" text-anchor="middle">12 pages</text>
+            </g>
+            <!-- arrow to canvas -->
+            <g stroke="oklch(0.42 0.080 200)" stroke-width="1" fill="none">
+              <path d="M130 50 H 168 L 164 46 M168 50 L 164 54"></path>
+            </g>
+            <!-- mini canvas with calibration -->
+            <rect x="178" y="14" width="88" height="72" fill="oklch(0.985 0.005 85)" stroke="oklch(0.20 0.012 80)"></rect>
+            <line x1="190" y1="50" x2="254" y2="50" stroke="oklch(0.60 0.095 195)" stroke-width="1"></line>
+            <line x1="190" y1="46" x2="190" y2="54" stroke="oklch(0.60 0.095 195)" stroke-width="1"></line>
+            <line x1="254" y1="46" x2="254" y2="54" stroke="oklch(0.60 0.095 195)" stroke-width="1"></line>
+            <text x="222" y="44" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="oklch(0.42 0.080 200)">5 000 mm</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-n">02<sup>·measure</sup></div>
+        <h3>Measure.</h3>
+        <p>Set up measurement groups by trade. Draw walls, slabs, doors, fittings. Wall thickness renders to scale on the canvas so you see exactly what you've measured.</p>
+        <div class="step-anim">
+          <svg viewBox="0 0 280 100" preserveAspectRatio="xMidYMid meet">
+            <rect x="0" y="0" width="280" height="100" fill="url(#gridfine)"></rect>
+            <defs>
+              <pattern id="gridfine" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M14 0H0V14" stroke="oklch(0.90 0.006 80)" stroke-width="0.5" fill="none"></path></pattern>
+            </defs>
+            <!-- L-shaped wall -->
+            <rect x="50" y="22" width="180" height="6" fill="oklch(0.20 0.012 80)"></rect>
+            <rect x="50" y="22" width="6" height="58" fill="oklch(0.20 0.012 80)"></rect>
+            <rect x="140" y="28" width="6" height="48" fill="oklch(0.60 0.095 195)"></rect>
+            <!-- callout -->
+            <line x1="146" y1="50" x2="200" y2="50" stroke="oklch(0.42 0.080 200)" stroke-width="0.7"></line>
+            <text x="204" y="46" font-family="JetBrains Mono, monospace" font-size="7" fill="oklch(0.42 0.080 200)">W-04</text>
+            <text x="204" y="56" font-family="JetBrains Mono, monospace" font-size="7" fill="oklch(0.36 0.012 80)">t = 0.23</text>
+            <!-- cursor -->
+            <circle cx="143" cy="76" r="3" fill="none" stroke="oklch(0.42 0.080 200)"></circle>
+            <line x1="143" y1="68" x2="143" y2="84" stroke="oklch(0.42 0.080 200)" stroke-width="0.6"></line>
+            <line x1="135" y1="76" x2="151" y2="76" stroke="oklch(0.42 0.080 200)" stroke-width="0.6"></line>
+          </svg>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-n">03<sup>·export</sup></div>
+        <h3>Export.</h3>
+        <p>One click for a complete BOQ in Excel or PDF. Data integrity warnings catch missing dimensions before they reach the contract document.</p>
+        <div class="step-anim">
+          <svg viewBox="0 0 280 100" preserveAspectRatio="xMidYMid meet">
+            <!-- warning row -->
+            <rect x="14" y="14" width="252" height="20" fill="oklch(0.98 0.030 60)" stroke="oklch(0.62 0.13 60)" stroke-width="0.8"></rect>
+            <text x="22" y="28" font-family="JetBrains Mono, monospace" font-size="8" fill="oklch(0.50 0.13 60)">! 2 items missing height · review before export</text>
+            <!-- BOQ row -->
+            <rect x="14" y="42" width="252" height="44" fill="oklch(0.985 0.005 85)" stroke="oklch(0.20 0.012 80)"></rect>
+            <g font-family="JetBrains Mono, monospace" font-size="7" fill="oklch(0.36 0.012 80)">
+              <text x="22" y="54">D.1  Brickwork 230mm   124.6  m²   ✓</text>
+              <text x="22" y="66">D.2  Brickwork 115mm    48.2  m²   ✓</text>
+              <text x="22" y="78">C.1  PCC 1:3:6           18.9  m³   ✓</text>
+            </g>
+            <!-- export button -->
+            <rect x="186" y="44" width="76" height="40" fill="oklch(0.20 0.012 80)"></rect>
+            <text x="224" y="60" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="oklch(0.985 0.005 85)">EXPORT</text>
+            <text x="224" y="74" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="oklch(0.60 0.095 195)">→ .xlsx</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Author ──────────────────────────────────────────── -->
+<section class="block" id="author" data-screen-label="06 Author">
+  <div class="wrap author">
+    <div class="author-card">
+      <dl class="author-meta" style="grid-template-columns: auto 1fr;">
+        <dt>Practice</dt><dd>Chartered Quantity Surveyor</dd>
+        <dt>Memberships</dt><dd>MRICS · A.I.Q.SL</dd>
+        <dt>Based in</dt><dd>Colombo, Sri Lanka</dd>
+        <dt>Sectors</dt><dd>Healthcare, Industrial, Residential</dd>
+      </dl>
+    </div>
+
+    <div class="author-text">
+      <div class="section-tag" style="margin-bottom:20px;">§ 04 · Provenance</div>
+      <h2 class="section-h">Built by a <em>Quantity Surveyor.</em></h2>
+      <p class="section-body" style="margin-top: 28px;">
+        [Product] is built by a chartered Quantity Surveyor (MRICS, A.I.Q.SL), based on real takeoff work on Sri Lankan hospital, factory, and residential projects. Not a generic measurement tool retrofitted for construction — a QS tool, designed by someone who does QS work every day.
+      </p>
+
+      <div class="credentials">
+        <span><b>MRICS</b> · Royal Inst. of Chartered Surveyors</span>
+        <span><b>A.I.Q.SL</b> · Inst. of Quantity Surveyors, Sri Lanka</span>
+      </div>
+
+      <div class="projects-strip">
+        <div>Healthcare<b>Hospital projects</b></div>
+        <div>Industrial<b>Factory &amp; warehouse</b></div>
+        <div>Residential<b>Apartment schemes</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Beta access ─────────────────────────────────────── -->
+<section class="beta" id="beta" data-screen-label="07 Beta access">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">§ 05 · Access</div>
+      <h2 class="section-h">Currently in <em>private</em> beta.</h2>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1.4fr; gap: 80px; align-items: start;">
+      <p class="section-body" style="max-width: 360px;">
+        We're inviting a small group of practising QSs to use [Product] on live projects. If you'd like access, leave your email and a short note about the work you do.
+      </p>
+
+      <!--
+        TODO: Replace YOUR_FORMSPREE_ID below with the form ID from formspree.io.
+        Create a new form there, point it at the email you want submissions sent to,
+        copy the form's hashid into the action URL. No backend needed.
+      -->
+      <form id="beta-form" class="form-grid"
+            action="https://formspree.io/f/YOUR_FORMSPREE_ID"
+            method="POST">
+        <div class="form-row">
+          <label for="bf-name">Name <span class="req">*</span></label>
+          <input id="bf-name" name="name" type="text" placeholder="J. Perera" required="" autocomplete="name">
+        </div>
+        <div class="form-row">
+          <label for="bf-email">Email <span class="req">*</span></label>
+          <input id="bf-email" name="email" type="email" placeholder="you@practice.lk" required="" autocomplete="email">
+        </div>
+        <div class="form-row">
+          <label for="bf-country">Country</label>
+          <input id="bf-country" name="country" type="text" placeholder="Sri Lanka" autocomplete="country-name">
+        </div>
+        <div class="form-row">
+          <label for="bf-worktype">Type of work</label>
+          <select id="bf-worktype" name="work_type">
+            <option>Practice</option>
+            <option>In-house</option>
+            <option>Contractor</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-row full">
+          <label for="bf-note">Brief note <span style="color:oklch(0.55 0.01 80);">· optional</span></label>
+          <textarea id="bf-note" name="note" placeholder="What kind of projects do you measure?"></textarea>
+        </div>
+        <!-- Honeypot: bots fill this; real users don't. Formspree drops these. -->
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;" aria-hidden="true">
+        <div class="form-submit-row">
+          <button type="submit" class="btn-submit">
+            <span class="bf-label">Request access</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"></path></svg>
+          </button>
+          <span class="form-note">No spam · we reply within 5 working days</span>
+        </div>
+      </form>
+      <script>
+        (function () {
+          var form = document.getElementById('beta-form');
+          if (!form) return;
+          var btn = form.querySelector('button[type="submit"]');
+          var label = btn.querySelector('.bf-label');
+          var note = form.parentElement.querySelector('.form-note') || form.querySelector('.form-note');
+          form.addEventListener('submit', async function (e) {
+            // If the form action is still the placeholder, fall back to the
+            // old visual-only confirmation so the page still demos cleanly.
+            var placeholder = form.action.indexOf('YOUR_FORMSPREE_ID') !== -1;
+            if (placeholder) {
+              e.preventDefault();
+              if (label) label.textContent = 'Request received  ✓';
+              btn.disabled = true;
+              return;
+            }
+            e.preventDefault();
+            btn.disabled = true;
+            if (label) label.textContent = 'Sending…';
+            try {
+              var fd = new FormData(form);
+              var res = await fetch(form.action, {
+                method: 'POST',
+                body: fd,
+                headers: { 'Accept': 'application/json' }
+              });
+              if (res.ok) {
+                if (label) label.textContent = 'Request received  ✓';
+                form.reset();
+              } else {
+                btn.disabled = false;
+                if (label) label.textContent = 'Request access';
+                if (note) note.textContent = 'Could not send — please email hello@[productdomain] instead.';
+              }
+            } catch (err) {
+              btn.disabled = false;
+              if (label) label.textContent = 'Request access';
+              if (note) note.textContent = 'Network error — please email hello@[productdomain] instead.';
+            }
+          });
+        })();
+      </script>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ──────────────────────────────────────────── -->
+<footer data-screen-label="08 Footer">
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="brand" style="margin-bottom: 16px;">
+          <div class="brand-mark"><span></span></div>
+          <div class="brand-name">[Product]</div>
+        </div>
+        <p>[Product] is independently developed. Built around how Quantity Surveyors actually price work — not retrofitted from a generic CAD tool.</p>
+      </div>
+      <div>
+        <h6>Product</h6>
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#beta">Beta access</a>
+      </div>
+      <div>
+        <h6>Contact</h6>
+        <a href="mailto:hello@[productdomain]">hello@[productdomain]</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 [Product] · Independently developed</div>
+      <div>Colombo&nbsp;·&nbsp;Sri Lanka  /  v0.4.2-beta</div>
+    </div>
+  </div>
+</footer>
+
+</body></html>

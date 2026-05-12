@@ -1254,50 +1254,7 @@
           <span class="form-note">No spam · we reply within 5 working days</span>
         </div>
       </form>
-      <script>
-        (function () {
-          var form = document.getElementById('beta-form');
-          if (!form) return;
-          var btn = form.querySelector('button[type="submit"]');
-          var label = btn.querySelector('.bf-label');
-          var note = form.parentElement.querySelector('.form-note') || form.querySelector('.form-note');
-          form.addEventListener('submit', async function (e) {
-            // If the form action is still the placeholder, fall back to the
-            // old visual-only confirmation so the page still demos cleanly.
-            var placeholder = form.action.indexOf('https://formspree.io/f/mvzlddyg') !== -1;
-            if (placeholder) {
-              e.preventDefault();
-              if (label) label.textContent = 'Request received  ✓';
-              btn.disabled = true;
-              return;
-            }
-            e.preventDefault();
-            btn.disabled = true;
-            if (label) label.textContent = 'Sending…';
-            try {
-              var fd = new FormData(form);
-              var res = await fetch(form.action, {
-                method: 'POST',
-                body: fd,
-                headers: { 'Accept': 'application/json' }
-              });
-              if (res.ok) {
-                if (label) label.textContent = 'Request received  ✓';
-                form.reset();
-              } else {
-                btn.disabled = false;
-                if (label) label.textContent = 'Request access';
-                if (note) note.textContent = 'Could not send — please email hello@[productdomain] instead.';
-              }
-            } catch (err) {
-              btn.disabled = false;
-              if (label) label.textContent = 'Request access';
-              if (note) note.textContent = 'Network error — please email hello@[productdomain] instead.';
-            }
-          });
-        })();
-      </script>
-    </div>
+      </div>
   </div>
 </section>
 

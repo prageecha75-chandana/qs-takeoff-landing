@@ -1218,9 +1218,8 @@
         copy the form's hashid into the action URL. No backend needed.
       -->
       <form id="beta-form" class="form-grid"
-            action="https://formspree.io/f/https://formspree.io/f/mvzlddyg"
-            method="POST">
-        <div class="form-row">
+            action="https://formspree.io/f/mvzldyyg" method="POST">
+            <div class="form-row">
           <label for="bf-name">Name <span class="req">*</span></label>
           <input id="bf-name" name="name" type="text" placeholder="J. Perera" required="" autocomplete="name">
         </div>
@@ -1265,7 +1264,7 @@
           form.addEventListener('submit', async function (e) {
             // If the form action is still the placeholder, fall back to the
             // old visual-only confirmation so the page still demos cleanly.
-            var placeholder = form.action.indexOf('YOUR_FORMSPREE_ID') !== -1;
+            var placeholder = form.action.indexOf('https://formspree.io/f/mvzlddyg') !== -1;
             if (placeholder) {
               e.preventDefault();
               if (label) label.textContent = 'Request received  ✓';
